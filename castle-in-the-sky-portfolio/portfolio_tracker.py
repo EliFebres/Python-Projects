@@ -111,8 +111,3 @@ def get_portfolio_value(symbol_list):
     else:
         portfolio_df.to_excel('Data/portfolio-value.xlsx', index=False)
         total_pf_value_df.to_excel('Data/total-portfolio-value.xlsx', index=False)
-
-
-from get_eps_data import *
-get_shares(symbol_list, 10_000)
-get_portfolio_value(symbol_list)

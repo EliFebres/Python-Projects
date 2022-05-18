@@ -1,16 +1,19 @@
-Program Name: Castle In The Sky Portfolio
+Program Name: Castle In The Sky Portfolio (✓)
 
 What is the Benchmark of?
-- Invests into the 12 most popular stocks on twitter and ranks them by EPS growth nezxt year.
-Excludes companies with negative next year EPS growth.
+- Invests into the 20 most popular stocks with positive sentiment, ranks them by positive EPS growth next year, and invests using quartile allocations.
+
 How does the Benchmark optimize position size?
-- Allocates to assets by quartiles. 1st Q 33%, 2nd Q 33%, 3rd Q 16.5%, 4th Q 16.5% 
+- Allocates to assets by quartiles. 1st Q 38.5%, 2nd Q 31%, 3rd Q 18.5%, 4th Q 12.0% 
+
+What does this accomplish?
+- This portfolio will prove once and for all if following the crowd is profitable or not.
 
 Programing To Do
-1. Grab the 12 most popular stocks on twitter (or by inflows) over a 1 month period
-2. Create a db of all tickers in the S&P 500 (EPS Next Year)...  
-2. Rank them by Next Year EPS Growth
-3. Invest by quartiles. 1st Q 33%, 2nd Q 33%, 3rd Q 16.5%, 4th Q 16.5%
-3. Reblance portfolio every month
+1. Grab the 20 most popular stocks averaged over a 1-month period ✓
+2. Create a db of EPS Next Yr for all tickers in the S&P 500 ✓  
+2. Rank them by Next Year EPS Growth ✓
+3. Invest by quartiles. 1st Q 40%, 2nd Q 30%, 3rd Q 15%, 4th Q 15% ✓
+4. Track portfolio performance
+3. Rebalance portfolio every month
 4. Create a dashboard to monitor daily portfolio performance
-5. Backtest Benchmark as far as possible

@@ -1,8 +1,8 @@
-import os.path
 import time
 from tqdm import tqdm
 import pandas as pd
 from finvizfinance.quote import finvizfinance
+import os.path
 
 # Get Next Year EPS Grwoth for Each Ticker in S&P500
 
@@ -44,7 +44,7 @@ def update_eps_data(tickers):
             ticker_eps_growth.append(eps_percent)
         x += step
         y += step
-        time.sleep(6)
+        time.sleep(3.5)
         
 
     eps_next_df = pd.DataFrame(columns=tickers)
@@ -64,12 +64,12 @@ def update_eps_data(tickers):
     else:
         eps_next_df.to_excel('Data/tickers-and-eps.xlsx', index=False)
 
-df = pd.read_excel('Data/tickers-and-eps.xlsx')
-date_list = df['Date'][0]
 
-if date_list == date_list:
-    print('EPS Next Year Growth Datebase Is: Up To Date')
-else:
-    print('Updating Database...')
-    update_eps_data(symbol_list)
+# Get Last Date in DB and Get Today's Date
+try:
+    df = pd.read_excel('Data/tickers-and-eps.xlsx')
+    eps_db_last_date = df['Date'][0]
+except FileNotFoundError:
+    eps_db_last_date = 0
 
+today = pd.to_datetime('today').normalize()

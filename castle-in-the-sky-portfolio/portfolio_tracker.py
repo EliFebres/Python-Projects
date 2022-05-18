@@ -38,6 +38,7 @@ def update_shares(symbol_list):
 
     portfolio_value_df = pd.read_excel('Data/total-portfolio-value.xlsx')
     portfolio_value = portfolio_value_df.iloc[0].values.tolist().pop(1)
+    print(portfolio_value)
 
     if today == end_of_month:
         get_shares(symbol_list, portfolio_value)

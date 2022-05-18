@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 import datetime as dt
+from socket import timeout
+from numpy import source
 import pandas as pd
 import pandas_datareader as pdr
 import re
@@ -8,11 +10,6 @@ import time
 import os.path
 from warnings import simplefilter
 
-
-today = dt.datetime.today()
-yesterday = today - timedelta(days=1)
-ticker_prices = pdr.get_data_yahoo('MSFT', yesterday, today)['Adj Close']
-price = round(ticker_prices.tolist()[0], 2)
 
 # Remove of Pandas PerformanceWarning
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
@@ -26,7 +23,7 @@ def update_prices(symbol_list):
         ticker_prices = pdr.get_data_yahoo(symbol, yesterday, today)['Adj Close']
         price = round(ticker_prices.tolist()[0], 2)
         prices.append(price)
-        time.sleep(1)
+        time.sleep(2)
 
     prices_df = pd.DataFrame(columns=symbol_list)
     a_series = pd.Series(prices, index=prices_df.columns)

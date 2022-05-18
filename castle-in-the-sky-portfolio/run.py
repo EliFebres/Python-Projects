@@ -5,7 +5,6 @@ while True:
     file_exists = os.path.exists('Data/tickers-and-eps.xlsx')
     if file_exists is False:
         from get_eps_data import *
-        get_sp500_tickers()
         update_eps_data(symbol_list)
         from search_twitter import *
         get_sentiment(symbol_list)

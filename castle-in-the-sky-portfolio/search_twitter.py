@@ -7,14 +7,17 @@ import snscrape.modules.twitter as sntwitter
 import nltk
 from get_eps_data import *
 from os.path import exists
+from warnings import simplefilter
 
-
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+simplefilter(action="ignore", category=FutureWarning)
 # Use download if dictionary of words needs updating
 nltk.download('vader_lexicon')
 
 def get_sentiment(tickers):
     sentiment = []
     for ticker in tqdm(tickers):
+        simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
         #Get user input
         query = ticker
         #As long as the query is valid (not empty or equal to '#')...

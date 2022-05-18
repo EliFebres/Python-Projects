@@ -17,13 +17,13 @@ def get_sp500_tickers():
             textfile.write(f"{symbol},")
     textfile.close()
 
-
 textfile = open('Data/S&P500_tickers.txt', 'r')
 symbols = textfile.read()
 symbol_list = symbols.split(',')
 symbol_list.pop(-1)
 symbol_list.remove('BRK.B')
 symbol_list.remove('BF.B')
+symbol_list.remove('BALL')
 textfile.close()
 
 

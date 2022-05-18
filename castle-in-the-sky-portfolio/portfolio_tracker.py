@@ -1,4 +1,5 @@
 import pandas as pd
+import os.path
 
 
 def get_shares(symbol_list, portfolio_value):

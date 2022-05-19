@@ -1,5 +1,4 @@
 import os.path
-import time
 
 
 file_exists = os.path.exists('Data/tickers-and-eps.xlsx')
@@ -54,4 +53,3 @@ else:
     else:
         update_shares(symbol_list)
         get_portfolio_value(symbol_list)
-

@@ -3,6 +3,10 @@ from tqdm import tqdm
 import pandas as pd
 from finvizfinance.quote import finvizfinance
 import os.path
+from warnings import simplefilter
+
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+simplefilter(action="ignore", category=FutureWarning)
 
 # Get Next Year EPS Grwoth for Each Ticker in S&P500
 

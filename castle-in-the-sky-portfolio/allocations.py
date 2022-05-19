@@ -13,6 +13,7 @@ from warnings import simplefilter
 
 # Remove of Pandas PerformanceWarning
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+simplefilter(action="ignore", category=FutureWarning)
 
 
 def update_prices(symbol_list):

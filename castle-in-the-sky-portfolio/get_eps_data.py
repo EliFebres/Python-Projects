@@ -1,9 +1,10 @@
 import time
-from tqdm import tqdm
-import pandas as pd
-from finvizfinance.quote import finvizfinance
 import os.path
+import pandas as pd
+from tqdm import tqdm
+from Misc.db_config import engine
 from warnings import simplefilter
+from finvizfinance.quote import finvizfinance
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 simplefilter(action="ignore", category=FutureWarning)
@@ -21,7 +22,7 @@ def get_sp500_tickers():
             textfile.write(f"{symbol},")
     textfile.close()
 
-textfile = open('Data/S&P500_tickers.txt', 'r')
+textfile = open('Data/S&P500_tickers.txt', 'r') 
 symbols = textfile.read()
 symbol_list = symbols.split(',')
 symbol_list.pop(-1)
@@ -57,23 +58,14 @@ def update_eps_data(tickers):
     today = pd.to_datetime('today').normalize()
     eps_next_df.insert(0,'Date', today)
 
-    # If db doesn't exsist, create one. If it does exist, then update
-    file_exists = os.path.exists('Data/tickers-and-eps.xlsx')
-    if file_exists:
-        df2 = pd.read_excel('Data/tickers-and-eps.xlsx')
-        result = pd.concat([eps_next_df, df2], ignore_index=True, sort=False)
-        result.to_excel('Data/tickers-and-eps-update.xlsx', index=False)
-        df3 = pd.read_excel('Data/tickers-and-eps-update.xlsx')
-        df3.to_excel('Data/tickers-and-eps.xlsx', index=False)
-    else:
-        eps_next_df.to_excel('Data/tickers-and-eps.xlsx', index=False)
+    # # If db doesn't exsist, create one. If it does exist, then update
+    eps_next_df.to_sql('eps', con=engine, if_exists='append', index=False)
 
 
 # Get Last Date in DB and Get Today's Date
 try:
-    df = pd.read_excel('Data/tickers-and-eps.xlsx')
-    eps_db_last_date = df['Date'][0]
-except FileNotFoundError:
-    eps_db_last_date = 0
-
-today = pd.to_datetime('today').normalize()
+    connection = engine.connect()
+    eps_db = pd.read_sql('eps', connection)
+    eps_last_date = eps_db['Date'][0]
+except:
+    eps_last_date = 0

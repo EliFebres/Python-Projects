@@ -1,13 +1,16 @@
-import numpy as np
-import datetime as dt
 import re
-from wordcloud import WordCloud, STOPWORDS
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-import snscrape.modules.twitter as sntwitter
 import nltk
-from get_eps_data import *
+import pandas as pd
+import datetime as dt
+from tqdm import tqdm
 from os.path import exists
+from Misc.db_config import engine
 from warnings import simplefilter
+from wordcloud import WordCloud, STOPWORDS
+import snscrape.modules.twitter as sntwitter
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 simplefilter(action="ignore", category=FutureWarning)
@@ -120,20 +123,14 @@ def get_sentiment(tickers):
     sentiment_db.insert(0,'Date', today)
 
     # If db doesn't exsist, create one. If it does exist, then update
-    file_exists = exists('Data/sentiment.xlsx')
-    if file_exists:
-        df2 = pd.read_excel('Data/sentiment.xlsx')
-        result = pd.concat([sentiment_db, df2], ignore_index=True, sort=False)
-        result.to_excel('Data/sentiment-update.xlsx', index=False)
-        df3 = pd.read_excel('Data/sentiment-update.xlsx')
-        df3.to_excel('Data/sentiment.xlsx', index=False)
-    else:
-        sentiment_db.to_excel('Data/sentiment.xlsx', index=False)
+    sentiment_db.to_sql('sentiment', con=engine, if_exists='append', index=False)
+    
 
 
 # Get Last Date in DB and Get Today's Date
 try:
-    df = pd.read_excel('Data/sentiment.xlsx')
-    sentiment_db_last_date = df['Date'][0]
+    connection = engine.connect()
+    sentiment_db = pd.read_sql('sentiment', connection)
+    sentiment_last_date = sentiment_db['Date'][0]
 except:
-    sentiment_db_last_date = 0
+    sentiment_last_date = 0

@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta
-import datetime as dt
-from socket import timeout
-from numpy import source
-import pandas as pd
-import pandas_datareader as pdr
 import re
-from tqdm import tqdm
 import time
 import os.path
+import pandas as pd
+import datetime as dt
+from tqdm import tqdm
+from Misc.db_config import engine
+import pandas_datareader as pdr
 from warnings import simplefilter
+from datetime import datetime, timedelta
 
 
 # Remove of Pandas PerformanceWarning
@@ -24,7 +23,7 @@ def update_prices(symbol_list):
         ticker_prices = pdr.get_data_yahoo(symbol, yesterday, today)['Adj Close']
         price = round(ticker_prices.tolist()[0], 2)
         prices.append(price)
-        time.sleep(2)
+        time.sleep(3)
 
     prices_df = pd.DataFrame(columns=symbol_list)
     a_series = pd.Series(prices, index=prices_df.columns)
@@ -33,20 +32,16 @@ def update_prices(symbol_list):
     prices_df.insert(0,'Date', today)
 
     # If db doesn't exsist, create one. If it does exist, then update
-    file_exists = os.path.exists('Data/prices.xlsx')
-    if file_exists:
-        df2 = pd.read_excel('Data/prices.xlsx')
-        result = pd.concat([prices_df, df2], ignore_index=True, sort=False)
-        result.to_excel('Data/prices-update.xlsx', index=False)
-        df3 = pd.read_excel('Data/prices-update.xlsx')
-        df3.to_excel('Data/prices.xlsx', index=False)
-    else:
-        prices_df.to_excel('Data/prices.xlsx', index=False)
-    
+    prices_df.to_sql('prices', con=engine, if_exists='append', index=False)
+
 # Get Last Date in DB and Get Today's Date
-prices_df = pd.read_excel('Data/tickers-and-eps.xlsx')
-prices_last_date = prices_df['Date'][0]
-today = pd.to_datetime('today').normalize()
+try:
+    connection = engine.connect()
+    prices_db = pd.read_sql('prices', connection)
+    prices_last_date = prices_db['Date'][0]
+except:
+    prices_last_date = 0
+
 
 
 
@@ -55,7 +50,8 @@ def get_allocations(symbol_list):
     first_of_month = today.replace(day=1)
     end_of_month = today.replace(day=30)
 
-    sentiment_data = pd.read_excel('Data/sentiment.xlsx')
+    connection = engine.connect()
+    sentiment_data = pd.read_sql('sentiment', connection)
 
     current_month_number = (sentiment_data['Date'] > first_of_month) & (sentiment_data['Date'] <= end_of_month)
     current_month_sentiment = sentiment_data.loc[current_month_number]
@@ -77,22 +73,16 @@ def get_allocations(symbol_list):
     allocations_df.insert(0,'Date', today)
 
     # If db doesn't exsist, create one. If it does exist, then update
-    file_exists = os.path.exists('Data/allocations-df.xlsx')
-    if file_exists:
-        df2 = pd.read_excel('Data/allocations-df.xlsx')
-        result = pd.concat([allocations_df, df2], ignore_index=True, sort=False)
-        result.to_excel('Data/allocations-df-update.xlsx', index=False)
-        df3 = pd.read_excel('Data/allocations-df-update.xlsx')
-        df3.to_excel('Data/allocations-df.xlsx', index=False)
-    else:
-        allocations_df.to_excel('Data/allocations-df.xlsx', index=False)
+    allocations_df.to_sql('allocations', con=engine, if_exists='append', index=False)
 
 
 # Get Last Date in DB and Get Today's Date
 try:
-    allocations_df = pd.read_excel('Data/allocations-df.xlsx')
-    allocations_df_date = allocations_df['Date'][0]
+    connection = engine.connect()
+    allocations_db = pd.read_sql('allocations', connection)
+    allocations_last_date = allocations_db['Date'][0]
 except:
-    allocations_df_date = 0
-
+    allocations_last_date = 0
+    
+today = pd.to_datetime('today').normalize()
 end_of_month = today.replace(day=30)

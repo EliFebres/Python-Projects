@@ -6,9 +6,9 @@ def get_shares(symbol_list, portfolio_value):
     
     # Pull price and allocation data to get the initial shares db for each ticker
     connection = engine.connect()
-    prices_list = pd.read_sql('prices', connection).iloc[0].values.tolist()
+    prices_list = pd.read_sql('prices', connection).iloc[-1:].values.tolist()
     del prices_list[0]
-    allocations_list = pd.read_sql('allocations', connection).iloc[0].values.tolist()
+    allocations_list = pd.read_sql('allocations', connection).iloc[-1:].values.tolist()
     del allocations_list[0]
 
     shares = []
@@ -28,18 +28,17 @@ def get_shares(symbol_list, portfolio_value):
 
 def update_shares(symbol_list): #Figure out how to update shares with SQL
     today = pd.to_datetime('today').normalize()
-    end_of_month = today.replace(day=30)
+    end_of_month = today.replace(day=28)
 
     connection = engine.connect()
     portfolio_value_df = pd.read_sql('prices', connection)
-    portfolio_value = portfolio_value_df.iloc[0].values.tolist().pop(1)
-    print(portfolio_value)
+    portfolio_value = portfolio_value_df.iloc[-1:].values.tolist().pop(1)
 
     if today == end_of_month:
         get_shares(symbol_list, portfolio_value)
     else:
         # copy the first row of the shares db
-        shares_list = pd.read_sql('shares', connection).iloc[0].values.tolist()
+        shares_list = pd.read_sql('shares', connection).iloc[-1:].values.tolist()
         del shares_list[0]
         shares_df = pd.DataFrame(columns=symbol_list)
         a_series = pd.Series(shares_list, index=shares_df.columns)
@@ -62,9 +61,9 @@ except:
 
 def get_portfolio_value(symbol_list):
     connection = engine.connect()
-    shares_list = pd.read_sql('shares', connection).iloc[0].values.tolist()
+    shares_list = pd.read_sql('shares', connection).iloc[-1:].values.tolist()
     del shares_list[0]
-    prices_list = pd.read_sql('prices', connection).iloc[0].values.tolist()
+    prices_list = pd.read_sql('prices', connection).iloc[-1:].values.tolist()
     del prices_list[0]
 
     values = []

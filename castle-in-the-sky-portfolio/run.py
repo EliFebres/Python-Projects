@@ -1,10 +1,10 @@
 import time
 import schedule
-from get_eps_data import *
-from search_twitter import *
-from allocations import *
-from portfolio_tracker import *
-from Misc.db_config import engine
+from portfolio.get_eps_data import *
+from portfolio.search_twitter import *
+from portfolio.allocations import *
+from portfolio.portfolio_tracker import *
+from misc.db_config import engine
 import sqlalchemy as sql
 
 
@@ -20,11 +20,10 @@ def main():
         while True: # Run update prices until error is not recieved
             try:
                 update_prices(symbol_list)
-            except:
-                print('Trying Again To Creating Prices Database...')
-                update_prices(symbol_list)
-            else:
                 break
+            except:
+                print('Trying Again To Create Prices Database...')
+                pass
         print('Creating Allocations and Shares Database...')
         get_allocations(symbol_list)
         get_shares(symbol_list, 10_000)
@@ -33,7 +32,7 @@ def main():
         print('Done')
     else:
         # If EPS data is not up-to-date then update it
-        if eps_last_date == today:
+        if eps_last_date == end_of_month:
             print('EPS Next Year Growth Database Is Up-To-Date')
         else:
             print('Updating EPS Database...')
@@ -51,14 +50,14 @@ def main():
             print('Prices Database Is Up-To-Date')
         else:
             print('Updating Prices Database...')
-            while True:
+            while prices_last_date != today:
                 try:
                     update_prices(symbol_list)
-                except:
-                    print('Trying Again To Update Prices Database...')
-                    update_prices(symbol_list)
-                else:
                     break
+                except:
+                    time.sleep(10)
+                    print('Trying to Update Prices Database Again...')
+                    pass
 
         # If it is the end of the month then update allocations
         if allocations_last_date == end_of_month:

@@ -4,7 +4,7 @@ import pandas as pd
 import datetime as dt
 from tqdm import tqdm
 from os.path import exists
-from Misc.db_config import engine
+from misc.db_config import engine
 from warnings import simplefilter
 from wordcloud import WordCloud, STOPWORDS
 import snscrape.modules.twitter as sntwitter
@@ -131,6 +131,6 @@ def get_sentiment(tickers):
 try:
     connection = engine.connect()
     sentiment_db = pd.read_sql('sentiment', connection)
-    sentiment_last_date = sentiment_db['Date'][0]
+    sentiment_last_date = sentiment_db['Date'][-1:].values
 except:
     sentiment_last_date = 0

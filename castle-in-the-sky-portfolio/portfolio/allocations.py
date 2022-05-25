@@ -4,26 +4,26 @@ import os.path
 import pandas as pd
 import datetime as dt
 from tqdm import tqdm
-from Misc.db_config import engine
+from misc.db_config import engine
 import pandas_datareader as pdr
 from warnings import simplefilter
 from datetime import datetime, timedelta
 
 
-# Remove of Pandas PerformanceWarning
+# Remove Pandas PerformanceWarning
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 simplefilter(action="ignore", category=FutureWarning)
 
 
 def update_prices(symbol_list):
     today = dt.datetime.today()
-    yesterday = today - timedelta(days=1)
+    yesterday = today - timedelta(days=3)
     prices = []
     for symbol in tqdm(symbol_list):
-        ticker_prices = pdr.get_data_yahoo(symbol, yesterday, today)['Adj Close']
+        ticker_prices = pdr.DataReader(symbol, 'yahoo', yesterday, today)['Adj Close']
         price = round(ticker_prices.tolist()[0], 2)
         prices.append(price)
-        time.sleep(3)
+        time.sleep(2)
 
     prices_df = pd.DataFrame(columns=symbol_list)
     a_series = pd.Series(prices, index=prices_df.columns)
@@ -38,17 +38,15 @@ def update_prices(symbol_list):
 try:
     connection = engine.connect()
     prices_db = pd.read_sql('prices', connection)
-    prices_last_date = prices_db['Date'][0]
+    prices_last_date = prices_db['Date'][-1:].values
 except:
     prices_last_date = 0
-
-
 
 
 def get_allocations(symbol_list):
     today = pd.to_datetime('today').normalize()
     first_of_month = today.replace(day=1)
-    end_of_month = today.replace(day=30)
+    end_of_month = today.replace(day=28)
 
     connection = engine.connect()
     sentiment_data = pd.read_sql('sentiment', connection)
@@ -80,9 +78,9 @@ def get_allocations(symbol_list):
 try:
     connection = engine.connect()
     allocations_db = pd.read_sql('allocations', connection)
-    allocations_last_date = allocations_db['Date'][0]
+    allocations_last_date = allocations_db['Date'][-1:].values
 except:
     allocations_last_date = 0
     
 today = pd.to_datetime('today').normalize()
-end_of_month = today.replace(day=30)
+end_of_month = today.replace(day=28)

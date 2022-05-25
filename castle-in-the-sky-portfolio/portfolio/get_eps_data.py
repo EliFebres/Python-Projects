@@ -2,7 +2,7 @@ import time
 import os.path
 import pandas as pd
 from tqdm import tqdm
-from Misc.db_config import engine
+from misc.db_config import engine
 from warnings import simplefilter
 from finvizfinance.quote import finvizfinance
 
@@ -17,7 +17,7 @@ def get_sp500_tickers():
     second_table = data[1]
     df = first_table
     symbols = df['Symbol'].values.tolist()
-    textfile = open('Data/S&P500_tickers.txt', 'w')
+    textfile = open('data/S&P500_tickers.txt', 'w')
     for symbol in symbols:
             textfile.write(f"{symbol},")
     textfile.close()
@@ -58,7 +58,7 @@ def update_eps_data(tickers):
     today = pd.to_datetime('today').normalize()
     eps_next_df.insert(0,'Date', today)
 
-    # # If db doesn't exsist, create one. If it does exist, then update
+    # If db doesn't exsist, create one. If it does exist, then update
     eps_next_df.to_sql('eps', con=engine, if_exists='append', index=False)
 
 
@@ -66,6 +66,8 @@ def update_eps_data(tickers):
 try:
     connection = engine.connect()
     eps_db = pd.read_sql('eps', connection)
-    eps_last_date = eps_db['Date'][0]
+    eps_last_date = eps_db['Date'][-1:].values
 except:
     eps_last_date = 0
+
+print(eps_last_date)

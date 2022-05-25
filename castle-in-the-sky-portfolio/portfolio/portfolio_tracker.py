@@ -1,5 +1,5 @@
 import pandas as pd
-from Misc.db_config import engine
+from misc.db_config import engine
 
 
 def get_shares(symbol_list, portfolio_value):
@@ -55,7 +55,7 @@ def update_shares(symbol_list): #Figure out how to update shares with SQL
 try:
     connection = engine.connect()
     shares_db = pd.read_sql('shares', connection)
-    shares_last_date = shares_db['Date'][0]
+    shares_last_date = shares_db['Date'][-1:].values
 except:
     shares_last_date = 0
 
@@ -96,6 +96,6 @@ def get_portfolio_value(symbol_list):
 try:
     connection = engine.connect()
     portfolio_db = pd.read_sql('portfolio', connection)
-    portfolio_last_date = portfolio_db['Date'][0]
+    portfolio_last_date = portfolio_db['Date'][-1:].values
 except:
     portfolio_last_date = 0

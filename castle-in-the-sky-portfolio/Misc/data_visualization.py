@@ -5,6 +5,7 @@ import pandas as pd
 from db_config import engine
 import matplotlib.pyplot as plt
 import numpy as np
+import testfolio as tsf
 
 
 # Get labels and values for allocation pie chart

@@ -1,6 +1,6 @@
 import pandas as pd
 from db_config import engine
-import sqlalchemy as sql
+
 
 
 connection = engine.connect()

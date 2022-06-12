@@ -1,10 +1,9 @@
 import time
-import schedule
-from portfolio.get_eps_data import *
-from portfolio.search_twitter import *
-from portfolio.allocations import *
-from portfolio.portfolio_tracker import *
-from misc.db_config import engine
+from get_eps_data import *
+from search_twitter import *
+from allocations import *
+from portfolio_tracker import *
+from db_config import engine
 import sqlalchemy as sql
 
 
@@ -33,10 +32,10 @@ def main():
     else:
         # If EPS data is not up-to-date then update it
         if eps_last_date == end_of_month:
-            print('EPS Next Year Growth Database Is Up-To-Date')
-        else:
             print('Updating EPS Database...')
             update_eps_data(symbol_list)
+        else:
+            print('EPS Next Year Growth Database Is Up-To-Date')
 
         # If Sentiment data is not up-to-date then update it
         if sentiment_last_date == today:
@@ -77,8 +76,3 @@ def main():
         print('Done')
 
 main()
-schedule.every(6).hours.do(main)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
